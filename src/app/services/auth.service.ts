@@ -1,26 +1,64 @@
 import { Injectable } from '@angular/core';
+import { Http } from "@angular/http";
 import { Router } from '@angular/router';
+import decode from "jwt-decode";
+
+import { ICredential } from "../pages/home/ICredential";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private apiURI = 'http://localhost:8000'
 
-  private jwt: string = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcm5hbWUiOiJBQkMifQ.5v2YwEGKWpIKPOMYcZkxPex3TDIcabbdFRFoGJmHLaM';
+  private jwt: string
+  private user: ICredential | null
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private http: Http) { }
 
-  login(credential, isValid): boolean {
-    const { username, password } = credential;
-    if (username === 'ABC' && password === '123') {
-      localStorage.setItem('authToken', this.jwt);
-      isValid = true;
-    }
-    return isValid;
+  getUser({ username, password }: ICredential) {
+    return new Promise((resolve, reject) => {
+      let apiEndpoint = 'login'
+      this.http
+        .post(`${this.apiURI}/${apiEndpoint}`, {
+          username,
+          password
+        })
+        .subscribe(response => {
+          const data = response.json()
+          if (data.found) {
+            resolve(data.token)
+          } else {
+            reject(null)
+          }
+        })
+    })
   }
 
-  isLoggedIn() {
-    return localStorage.getItem('authToken');
+  decodeUser(): any {
+    this.user = (this.isLoggedIn()) ? decode(localStorage.getItem('authToken')) : null
+    return this.user
+  }
+
+  login(credential: ICredential): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      let shouldValid: boolean
+      try {
+        let jwt = await this.getUser(credential)
+        this.jwt = jwt.toString()
+        localStorage.setItem('authToken', this.jwt);
+        shouldValid = true;
+        resolve(shouldValid)
+      } catch (error) {
+        shouldValid = false
+        reject(shouldValid)
+      }
+    })
+  }
+
+  isLoggedIn(): boolean {
+    let isLoggedIn = (localStorage.getItem('authToken')) ? true : false
+    return isLoggedIn
   }
 
   logout() {

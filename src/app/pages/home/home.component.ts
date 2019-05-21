@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ICredential } from "./ICredential";
 import { AuthService } from "../../services/auth.service";
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +13,8 @@ import { Router } from '@angular/router';
 export class HomeComponent implements OnInit {
 
   isValid: boolean = false
-  isSubmitted = false
+  isSubmitted: boolean = false
+  user: Observable<any>
 
   form = new FormGroup({
     username: new FormControl('', Validators.required),
@@ -22,6 +24,7 @@ export class HomeComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
+    this.user = this.authService.decodeUser()
   }
 
   get username() {
@@ -42,11 +45,15 @@ export class HomeComponent implements OnInit {
         username: this.username.value,
         password: this.password.value
       }
-      this.isValid = this.authService.login(credential, this.isValid)
-      this.isSubmitted = true
-      if (this.isValid) {
-        this.router.navigate(['/friends'])
-      }
+      this.authService.login(credential)
+        .then(isValid => {
+          this.isValid = isValid
+          this.isSubmitted = true
+          if (this.isValid) {
+            this.router.navigate(['friends'])
+          }
+        })
+        .catch(isValid => this.isSubmitted = true)
     }
   }
 

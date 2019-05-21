@@ -32,7 +32,8 @@
           <div *ngIf="authService.isLoggedIn()">
             <div class="card">
               <div class="card-body text-center">
-                <h5 class="card-text">You're Already Logged In</h5>
+                <h5 class="card-text mb-4">You're Already Logged In As</h5>
+                <h3>{{user.username}}</h3>
                 <hr>
                 <button (click)="onClick()" class="btn btn-secondary btn-lg">Logout</button>
               </div>
