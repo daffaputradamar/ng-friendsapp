@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { IFriend } from "./IFriend";
 
+import { FriendService } from "../../services/friend.service";
+
 @Component({
   selector: 'app-friends',
   templateUrl: './friends.component.html',
@@ -14,9 +16,11 @@ export class FriendsComponent implements OnInit {
   search: string = ""
   friendsKeys: string[] = ['name', 'email', 'contact']
 
-  constructor() { }
+  constructor(private friendService: FriendService) { }
 
   ngOnInit() {
+    this.friends = this.friendService.getFriends()
+    this.friendsFound = this.friends
   }
 
   onSearch() {
@@ -56,7 +60,7 @@ export class FriendsComponent implements OnInit {
       this.email.reset()
       this.contact.reset()
 
-      this.friends = [...this.friends, newFriend]
+      this.friends = this.friendService.addFriend(newFriend)
       this.friendsFound = [...this.friends]
     }
   }

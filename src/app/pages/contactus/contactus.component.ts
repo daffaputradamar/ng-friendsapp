@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { IContact } from './IContact'
 
+import { ContactService } from "../../services/contact.service";
+
 @Component({
   selector: 'app-contactus',
   templateUrl: './contactus.component.html',
@@ -17,9 +19,10 @@ export class ContactusComponent implements OnInit {
     message: new FormControl('', Validators.required)
   })
 
-  constructor() { }
+  constructor(private contactService: ContactService) { }
 
   ngOnInit() {
+    this.contacts = this.contactService.getContacts()
   }
 
   get name() {
@@ -45,7 +48,7 @@ export class ContactusComponent implements OnInit {
       this.email.reset()
       this.message.reset()
 
-      this.contacts = [...this.contacts, newContact]
+      this.contacts = this.contactService.addContact(newContact)
     }
   }
 

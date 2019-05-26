@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import decode from "jwt-decode";
 
 import { ICredential } from "../pages/home/ICredential";
+import { FriendService } from "./friend.service";
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class AuthService {
   private jwt: string
   private user: ICredential | null
 
-  constructor(private router: Router, private http: Http) { }
+  constructor(private router: Router, private http: Http, private friendService: FriendService) { }
 
   getUser({ username, password }: ICredential) {
     return new Promise((resolve, reject) => {
@@ -63,6 +64,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('authToken');
+    this.friendService.deleteFriends()
     this.router.navigate(['/home']);
   }
 }
