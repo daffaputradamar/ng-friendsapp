@@ -49,6 +49,10 @@ export class ContactusComponent implements OnInit {
       this.message.reset()
 
       this.contacts = this.contactService.addContact(newContact)
+    } else {
+      this.name.markAsTouched()
+      this.email.markAsTouched()
+      this.message.markAsTouched()
     }
   }
 

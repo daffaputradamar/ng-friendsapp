@@ -54,6 +54,9 @@ export class HomeComponent implements OnInit {
           }
         })
         .catch(isValid => this.isSubmitted = true)
+    } else {
+      this.username.markAsTouched()
+      this.password.markAsTouched()
     }
   }
 

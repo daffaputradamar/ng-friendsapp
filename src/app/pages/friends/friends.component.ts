@@ -62,6 +62,10 @@ export class FriendsComponent implements OnInit {
 
       this.friends = this.friendService.addFriend(newFriend)
       this.friendsFound = [...this.friends]
+    } else {
+      this.name.markAsTouched()
+      this.email.markAsTouched()
+      this.contact.markAsTouched()
     }
   }
 }
